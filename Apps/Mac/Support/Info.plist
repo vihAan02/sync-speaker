@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key>
+	<string>SyncSpeaker</string>
+	<key>CFBundleDisplayName</key>
+	<string>SyncSpeaker</string>
+	<key>CFBundleIdentifier</key>
+	<string>dev.syncspeaker.mac</string>
+	<key>CFBundleExecutable</key>
+	<string>SyncSpeaker</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>15.0</string>
+	<key>LSUIElement</key>
+	<true/>
+	<key>NSAudioCaptureUsageDescription</key>
+	<string>SyncSpeaker captures what this Mac plays (AirPlay and Music) so both MacBooks can play it in sync.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>SyncSpeaker listens for short calibration chirps to measure speaker spacing and sync.</string>
+	<key>NSAppleEventsUsageDescription</key>
+	<string>SyncSpeaker controls Music.app playback from the web remote.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>SyncSpeaker streams audio and timing between your MacBooks and serves the remote to your phone.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_syncspeaker._tcp</string>
+	</array>
+</dict>
+</plist>

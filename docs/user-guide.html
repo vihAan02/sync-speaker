@@ -1,0 +1,473 @@
+<title>SyncSpeaker Setup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --ground: #f4f6f8;
+  --surface: #ffffff;
+  --ink: #18202c;
+  --muted: #5b6573;
+  --line: #d9dee5;
+  --soft: #e9edf2;
+  --a: #2f55c9;
+  --a-soft: #e5ebfb;
+  --b: #0d7f63;
+  --b-soft: #dff2ec;
+  --phone: #8a4fbf;
+  --phone-soft: #f0e7f8;
+  --warn: #9a5b00;
+  --warn-soft: #fbf0dc;
+  --good: #1f7a44;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #10141a;
+    --surface: #171c24;
+    --ink: #e6eaf0;
+    --muted: #9aa4b2;
+    --line: #2a313c;
+    --soft: #1e242e;
+    --a: #8aa6ff;
+    --a-soft: #1f2a48;
+    --b: #5fd1ad;
+    --b-soft: #15342c;
+    --phone: #c9a0f0;
+    --phone-soft: #2e2340;
+    --warn: #f0b458;
+    --warn-soft: #3a2c14;
+    --good: #6fd39a;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #10141a;
+  --surface: #171c24;
+  --ink: #e6eaf0;
+  --muted: #9aa4b2;
+  --line: #2a313c;
+  --soft: #1e242e;
+  --a: #8aa6ff;
+  --a-soft: #1f2a48;
+  --b: #5fd1ad;
+  --b-soft: #15342c;
+  --phone: #c9a0f0;
+  --phone-soft: #2e2340;
+  --warn: #f0b458;
+  --warn-soft: #3a2c14;
+  --good: #6fd39a;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font: 17px/1.6 "Atkinson Hyperlegible", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  padding: 0 20px;
+}
+h1, h2, h3 { font-family: "Familjen Grotesk", ui-sans-serif, system-ui, sans-serif; text-wrap: balance; line-height: 1.15; margin: 0; }
+h1 { font-size: clamp(2.1rem, 5vw, 3rem); font-weight: 700; letter-spacing: -0.02em; }
+h2 { font-size: 1.65rem; font-weight: 600; letter-spacing: -0.01em; }
+h3 { font-size: 1.12rem; font-weight: 600; }
+p { margin: 0; }
+a { color: var(--a); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--a); outline-offset: 2px; border-radius: 4px; }
+code, .mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.86em; }
+code { background: var(--soft); padding: 0.1em 0.35em; border-radius: 4px; }
+
+.shell {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding-block: 48px 96px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+}
+@media (min-width: 960px) {
+  .shell { grid-template-columns: 220px minmax(0, 1fr); gap: 64px; }
+  .rail { position: sticky; top: 32px; align-self: start; }
+}
+
+.rail nav { display: grid; gap: 2px; font-size: 0.93rem; }
+.rail .label, .eyebrow {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+}
+.rail .label { margin-bottom: 10px; }
+.rail a { color: var(--muted); text-decoration: none; padding: 5px 0 5px 12px; border-left: 2px solid var(--line); }
+.rail a:hover { color: var(--ink); border-left-color: var(--ink); }
+@media (max-width: 959px) {
+  .rail nav { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+}
+
+main { max-width: 70ch; display: grid; gap: 64px; }
+header.intro { display: grid; gap: 16px; }
+.lede { font-size: 1.15rem; color: var(--muted); }
+
+.devices { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.8rem; font-weight: 700; letter-spacing: 0.02em;
+  padding: 3px 10px; border-radius: 999px; white-space: nowrap;
+}
+.chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.chip.a { color: var(--a); background: var(--a-soft); }
+.chip.b { color: var(--b); background: var(--b-soft); }
+.chip.phone { color: var(--phone); background: var(--phone-soft); }
+.chip.both { color: var(--ink); background: var(--soft); }
+
+.note {
+  background: var(--warn-soft); color: var(--ink);
+  padding: 14px 18px; border-radius: 10px; font-size: 0.95rem;
+}
+.note strong { color: var(--warn); }
+
+section { display: grid; gap: 20px; scroll-margin-top: 24px; }
+section > header { display: grid; gap: 8px; }
+section > header p { color: var(--muted); }
+
+ol.steps { list-style: none; margin: 0; padding: 0; counter-reset: step; display: grid; gap: 22px; }
+ol.steps > li { counter-increment: step; display: grid; grid-template-columns: 36px 1fr; gap: 14px; }
+ol.steps > li::before {
+  content: counter(step);
+  width: 30px; height: 30px; border-radius: 50%;
+  display: grid; place-items: center;
+  font: 600 0.95rem "Familjen Grotesk", ui-sans-serif, sans-serif;
+  background: var(--surface); border: 1.5px solid var(--line); color: var(--ink);
+}
+.step { display: grid; gap: 8px; padding-top: 3px; }
+.step-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.step ul { margin: 0; padding-left: 1.1em; display: grid; gap: 4px; }
+
+.path { font-weight: 700; }
+.path i { font-style: normal; color: var(--muted); font-weight: 400; padding: 0 0.3em; }
+
+pre {
+  margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+  padding: 12px 14px; overflow-x: auto; font-size: 0.85rem; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+
+.menu {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px 16px; font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 0.8rem;
+  display: grid; gap: 4px; overflow-x: auto;
+}
+.menu .title { font-family: "Familjen Grotesk", sans-serif; font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; }
+.menu .seg { display: flex; gap: 0; margin-bottom: 6px; width: max-content; }
+.menu .seg span { border: 1px solid var(--line); padding: 3px 10px; font-family: "Atkinson Hyperlegible", sans-serif; }
+.menu .seg span + span { border-left: none; }
+.menu .seg .on { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.menu .ok { color: var(--good); }
+.caption { font-size: 0.85rem; color: var(--muted); }
+
+.healthy { border-top: 1px solid var(--line); }
+.healthy div {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: baseline;
+  padding: 10px 0; border-bottom: 1px solid var(--line);
+}
+.healthy dt { font-weight: 700; }
+.healthy dd { margin: 0; font-family: "JetBrains Mono", monospace; font-size: 0.88rem; font-variant-numeric: tabular-nums; color: var(--good); white-space: nowrap; }
+.healthy dt small { display: block; font-weight: 400; color: var(--muted); font-size: 0.88rem; }
+
+.fixes { display: grid; gap: 0; border-top: 1px solid var(--line); }
+.fix { display: grid; gap: 6px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.fix h3 { font-size: 1.02rem; }
+.fix p { color: var(--muted); }
+
+.split { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.panel p { font-size: 0.95rem; }
+</style>
+
+<div class="shell">
+  <aside class="rail">
+    <div class="label">Setup guide</div>
+    <nav aria-label="Sections">
+      <a href="#before">Before you start</a>
+      <a href="#install">Install on both Macs</a>
+      <a href="#leader">Turn on Mac A</a>
+      <a href="#follower">Turn on Mac B</a>
+      <a href="#play">Play music</a>
+      <a href="#calibrate">Calibrate sync</a>
+      <a href="#iphone">Follow me with iPhone</a>
+      <a href="#everyday">Every day after</a>
+      <a href="#trouble">Troubleshooting</a>
+    </nav>
+  </aside>
+
+  <main>
+    <header class="intro">
+      <p class="eyebrow">SyncSpeaker · v0.1</p>
+      <h1>Set up two MacBooks as one speaker</h1>
+      <p class="lede">
+        About 15 minutes the first time. One MacBook becomes <strong>Speaker A</strong> (the leader that receives your music),
+        the other becomes <strong>Speaker B</strong> (the follower). Your iPhone sends the music and, optionally, tells the
+        speakers where you're sitting.
+      </p>
+      <div class="devices">
+        <span class="chip a">Mac A · leader</span>
+        <span class="chip b">Mac B · follower</span>
+        <span class="chip phone">iPhone</span>
+      </div>
+      <p class="note">
+        <strong>Early build.</strong> Sync has been tested on one Mac so far. If Mac A is silent when you AirPlay to it,
+        see <a href="#trouble">Troubleshooting</a>. That's the first thing to confirm on real hardware.
+      </p>
+    </header>
+
+    <section id="before">
+      <header>
+        <h2>Before you start</h2>
+      </header>
+      <div class="split">
+        <div class="panel">
+          <h3>You need</h3>
+          <p>Two MacBooks on macOS 15 or later, an iPhone with Apple Music, and a Wi-Fi network all three are on.</p>
+        </div>
+        <div class="panel">
+          <h3>Place the MacBooks</h3>
+          <p>1.5–3 m apart, lids open, facing where you'll sit. Set both Macs' system volume to the same level.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="install">
+      <header>
+        <h2>Install on both Macs</h2>
+        <p>Build the app once, then copy it to each MacBook.</p>
+      </header>
+      <ol class="steps">
+        <li><div class="step">
+          <div class="step-head"><h3>Build the app</h3><span class="chip both">either Mac</span></div>
+          <p>In Terminal, from the <code>sync-speaker</code> folder:</p>
+          <pre><code>scripts/build-app.sh</code></pre>
+          <p class="caption">This creates <code>build/SyncSpeaker.app</code>. It needs Node and the Xcode Command Line Tools.</p>
+        </div></li>
+        <li><div class="step">
+          <div class="step-head"><h3>Copy it to Applications on both Macs</h3><span class="chip a">Mac A</span><span class="chip b">Mac B</span></div>
+          <p>AirDrop or copy <code>SyncSpeaker.app</code> into each Mac's Applications folder.</p>
+        </div></li>
+        <li><div class="step">
+          <div class="step-head"><h3>Open it the first time</h3><span class="chip a">Mac A</span><span class="chip b">Mac B</span></div>
+          <p>
+            If macOS says the app can't be opened, Control-click it and choose <span class="path">Open</span>, or go to
+            <span class="path">System Settings<i>›</i>Privacy &amp; Security</span> and click <span class="path">Open Anyway</span>.
+          </p>
+          <p>A speaker icon appears in the menu bar. SyncSpeaker has no Dock icon.</p>
+        </div></li>
+      </ol>
+    </section>
+
+    <section id="leader">
+      <header>
+        <h2>Turn on Mac A, the leader</h2>
+        <p>Mac A receives the music, keeps time for both speakers, and hosts the remote control page.</p>
+      </header>
+      <ol class="steps">
+        <li><div class="step">
+          <div class="step-head"><h3>Turn on AirPlay Receiver</h3><span class="chip a">Mac A</span></div>
+          <p>
+            <span class="path">System Settings<i>›</i>General<i>›</i>AirDrop &amp; Handoff</span>. Turn on
+            <span class="path">AirPlay Receiver</span>. Set <span class="path">Allow AirPlay for</span> to
+            <em>Current User</em> if your iPhone uses the same Apple Account, otherwise <em>Anyone on the Same Network</em>.
+          </p>
+        </div></li>
+        <li><div class="step">
+          <div class="step-head"><h3>Choose Leader (A)</h3><span class="chip a">Mac A</span></div>
+          <p>Click the speaker icon in the menu bar and select <span class="path">Leader (A)</span>.</p>
+        </div></li>
+        <li><div class="step">
+          <div class="step-head"><h3>Allow the permission prompts</h3><span class="chip a">Mac A</span></div>
+          <ul>
+            <li><strong>System Audio Recording:</strong> lets SyncSpeaker pick up AirPlay and Music.app audio.</li>
+            <li><strong>Local Network:</strong> lets it talk to Mac B and your phone.</li>
+          </ul>
+          <p class="caption">
+            Missed a prompt? Turn it on in <span class="path">System Settings<i>›</i>Privacy &amp; Security<i>›</i>Screen &amp; System Audio Recording</span>,
+            then in the menu select <span class="path">Off</span> and <span class="path">Leader (A)</span> again.
+          </p>
+        </div></li>
+        <li><div class="step">
+          <div class="step-head"><h3>Check the menu</h3><span class="chip a">Mac A</span></div>
+          <div class="menu" role="img" aria-label="Example of the leader menu">
+            <div class="title">SyncSpeaker</div>
+            <div class="seg"><span>Off</span><span class="on">Leader (A)</span><span>Follower (B)</span></div>
+            <div>Output: MacBook Pro Speakers · buffer 243 ms</div>
+            <div class="ok">Capture: 48000 Hz · level −120 dB</div>
+            <div>Follower: not connected</div>
+          </div>
+          <p class="caption">
+            Example only. "Capture: 48000 Hz" means Mac A is ready. "Follower: not connected" is normal until Mac B is on.
+            Other sounds on Mac A are muted while it's a leader; that's expected.
+          </p>
+        </div></li>
+      </ol>
+    </section>
+
+    <section id="follower">
+      <header>
+        <h2>Turn on Mac B, the follower</h2>
+        <p>Mac B finds Mac A on the network by itself and plays in sync with it.</p>
+      </header>
+      <ol class="steps">
+        <li><div class="step">
+          <div class="step-head"><h3>Choose Follower (B)</h3><span class="chip b">Mac B</span></div>
+          <p>Click the speaker icon and select <span class="path">Follower (B)</span>. Leave the <em>Leader host</em> field blank. Allow <strong>Local Network</strong> when asked.</p>
+        </div></li>
+        <li><div class="step">
+          <div class="step-head"><h3>Wait for "connected"</h3><span class="chip b">Mac B</span></div>
+          <div class="menu" role="img" aria-label="Example of the follower menu">
+            <div class="title">SyncSpeaker</div>
+            <div class="seg"><span>Off</span><span>Leader (A)</span><span class="on">Follower (B)</span></div>
+            <div class="ok">Link: connected to Vihaan's MacBook Pro</div>
+            <div>Clock: offset 0.009 ms · jitter 0.007 ms · rtt 3.1 ms</div>
+            <div class="ok">Playout: locked · err 0.000 ms · buffer 242 ms · underruns 0</div>
+          </div>
+          <p class="caption">Example only. Within a few seconds the link says <em>connected</em> and playout says <em>locked</em>.</p>
+        </div></li>
+        <li><div class="step">
+          <div class="step-head"><h3>If it stays on "searching for leader…"</h3><span class="chip b">Mac B</span></div>
+          <p>
+            Type Mac A's network name in the <em>Leader host</em> field and press Return, then select Follower (B) again.
+            Find the name on Mac A in <span class="path">System Settings<i>›</i>General<i>›</i>Sharing</span>, under
+            <em>Local hostname</em>, for example <code>Vihaans-MacBook-Pro.local</code>.
+          </p>
+        </div></li>
+      </ol>
+    </section>
+
+    <section id="play">
+      <header>
+        <h2>Play music</h2>
+        <p>Use whichever is easier. Both come out of both MacBooks.</p>
+      </header>
+      <div class="split">
+        <div class="panel">
+          <span class="chip phone" style="justify-self:start">iPhone</span>
+          <h3>AirPlay from Apple Music</h3>
+          <p>Start a song, tap the <strong>AirPlay</strong> button in the player, and choose <strong>Mac A's name</strong>. AirPlay only to Mac A, never to Mac B.</p>
+          <p class="caption">Sound starts about 2 seconds after you press play. AirPlay adds that delay.</p>
+        </div>
+        <div class="panel">
+          <span class="chip phone" style="justify-self:start">any browser</span>
+          <h3>Use the remote</h3>
+          <p>In Safari on your phone, open <code>http://&lt;Mac A's local hostname&gt;:8080</code>. On Mac A you can also click <span class="path">Open Web UI</span> in the menu.</p>
+          <p class="caption">Play, pause, skip, search your library, and pick playlists in Music.app on Mac A. Tip: Share › Add to Home Screen.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="calibrate">
+      <header>
+        <h2>Calibrate sync</h2>
+        <p>Each MacBook plays a short chirp while both listen. SyncSpeaker then measures the gap between them and fixes any leftover timing offset. Do this once after placing the Macs, and again if you move them.</p>
+      </header>
+      <ol class="steps">
+        <li><div class="step">
+          <div class="step-head"><h3>Make the room quiet</h3><span class="chip both">room</span></div>
+          <p>Music is ducked automatically during the test. Turn off fans, TVs, and conversations for 3 seconds.</p>
+        </div></li>
+        <li><div class="step">
+          <div class="step-head"><h3>Run it from the remote</h3><span class="chip phone">remote</span></div>
+          <p>Open the <span class="path">Speakers</span> tab and tap <span class="path">Calibrate sync</span>. Both Macs ask for <strong>Microphone</strong> access the first time. Allow it, and run again if the first attempt fails.</p>
+        </div></li>
+        <li><div class="step">
+          <div class="step-head"><h3>Run it a second time to confirm</h3><span class="chip phone">remote</span></div>
+          <p>The first run corrects the offset. The second run should report a <strong>measured offset under 0.5 ms</strong> and roughly the spacing you'd get with a tape measure.</p>
+        </div></li>
+      </ol>
+    </section>
+
+    <section id="iphone">
+      <header>
+        <h2>Follow me with iPhone</h2>
+        <p>Optional. The SyncSpeaker iPhone app tells the speakers where you are, so the sound stays centered on you as you move. Without it, set <span class="path">Room<i>›</i>Spatial mode</span> to <em>Off</em> and sit between the Macs.</p>
+      </header>
+      <p class="note"><strong>Needs Xcode.</strong> The iPhone app is installed from Xcode (<code>Apps/Phone</code>, see the README) and hasn't been tested on a device yet.</p>
+      <ol class="steps">
+        <li><div class="step">
+          <div class="step-head"><h3>Open the app and connect</h3><span class="chip phone">iPhone</span></div>
+          <p>Allow <strong>Camera</strong> and <strong>Local Network</strong>. On the <span class="path">Room</span> tab it connects to Mac A by itself; if there's more than one, tap Mac A's name.</p>
+        </div></li>
+        <li><div class="step">
+          <div class="step-head"><h3>Place Speaker A</h3><span class="chip phone">iPhone</span><span class="chip a">Mac A</span></div>
+          <p>Hold the top of the phone against Mac A, then tap <span class="path">Phone is touching it</span> next to Speaker A. The button unlocks once the status reads <em>Tracking</em>; move the phone slowly around the room first if it doesn't.</p>
+        </div></li>
+        <li><div class="step">
+          <div class="step-head"><h3>Place Speaker B</h3><span class="chip phone">iPhone</span><span class="chip b">Mac B</span></div>
+          <p>Walk to Mac B and do the same. The app shows the spacing; after calibration it should be within about 5 cm of the acoustic measurement.</p>
+        </div></li>
+        <li><div class="step">
+          <div class="step-head"><h3>Sit anywhere</h3><span class="chip phone">iPhone</span></div>
+          <p>Hold the phone in front of you as you move, or set it down where you're sitting and turn on <span class="path">Lock my spot</span>. In the remote's <span class="path">Room</span> tab, make sure Spatial mode is <em>Sweet spot</em>; you'll see yourself on the map.</p>
+        </div></li>
+      </ol>
+    </section>
+
+    <section id="everyday">
+      <header>
+        <h2>Every day after</h2>
+        <p>Both Macs remember their role and calibration.</p>
+      </header>
+      <div class="split">
+        <div class="panel">
+          <h3>Turn on</h3>
+          <p>Open SyncSpeaker on both Macs, in any order. Mac B reconnects on its own. Then AirPlay to Mac A.</p>
+          <p class="caption">To start automatically, add SyncSpeaker in <span class="path">System Settings<i>›</i>General<i>›</i>Login Items</span> on both.</p>
+        </div>
+        <div class="panel">
+          <h3>Turn off</h3>
+          <p>Select <span class="path">Off</span> in the menu, or <span class="path">Quit</span>. Mac A's normal sound comes back right away.</p>
+        </div>
+      </div>
+      <dl class="healthy">
+        <div><dt>Sync error <small>Speakers tab, per Mac</small></dt><dd>under 1 ms</dd></div>
+        <div><dt>Clock jitter <small>Mac B</small></dt><dd>under 0.5 ms</dd></div>
+        <div><dt>Underruns <small>should stay the same number</small></dt><dd>not climbing</dd></div>
+        <div><dt>Calibration offset <small>second run</small></dt><dd>under 0.5 ms</dd></div>
+      </dl>
+    </section>
+
+    <section id="trouble">
+      <header>
+        <h2>Troubleshooting</h2>
+      </header>
+      <div class="fixes">
+        <div class="fix">
+          <h3>Mac A doesn't show up in the AirPlay list</h3>
+          <p>Check AirPlay Receiver is on and set to <em>Anyone on the Same Network</em>, and that the iPhone and Mac A share a Wi-Fi network.</p>
+        </div>
+        <div class="fix">
+          <h3>AirPlay connects but nothing plays, and the level meter stays empty</h3>
+          <p>Confirm System Audio Recording is allowed for SyncSpeaker, then select Off and Leader (A) again. If it's still silent, run <code>SyncSpeaker.app/Contents/MacOS/SyncSpeaker --capture-test 10 test.wav</code> in Terminal while AirPlaying and share the result: AirPlay capture may need the BlackHole workaround.</p>
+        </div>
+        <div class="fix">
+          <h3>"Capture: off" with an error in the menu</h3>
+          <p>The audio permission was denied. Turn it on in <span class="path">Privacy &amp; Security<i>›</i>Screen &amp; System Audio Recording</span>. Rebuilding the app can reset this permission.</p>
+        </div>
+        <div class="fix">
+          <h3>Mac B keeps searching for the leader</h3>
+          <p>Allow SyncSpeaker in <span class="path">Privacy &amp; Security<i>›</i>Local Network</span> on both Macs, type Mac A's hostname on Mac B, and if the firewall is on, allow incoming connections for SyncSpeaker on Mac A.</p>
+        </div>
+        <div class="fix">
+          <h3>Crackles, dropouts, or underruns going up</h3>
+          <p>In the remote's <span class="path">Settings</span>, raise <em>Playout latency</em> to 500 ms. A 5 GHz Wi-Fi band or moving closer to the router also helps.</p>
+        </div>
+        <div class="fix">
+          <h3>Sound is doubled or echoey</h3>
+          <p>You're probably AirPlaying to both Macs. AirPlay to Mac A only. If it persists, run Calibrate sync twice.</p>
+        </div>
+        <div class="fix">
+          <h3>Calibration says "chirps too quiet" or "implausible result"</h3>
+          <p>Turn both Macs' volume up, keep them under 5 m apart with nothing between them, and try again in a quieter moment.</p>
+        </div>
+        <div class="fix">
+          <h3>The map in the Room tab looks wrong</h3>
+          <p>Tap <span class="path">Reset</span> in the iPhone app and place both speakers again. ARKit drifts over long sessions.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

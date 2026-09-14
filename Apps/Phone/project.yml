@@ -1,0 +1,37 @@
+# iOS companion app. Generate the Xcode project with:
+#   brew install xcodegen && cd Apps/Phone && xcodegen
+# then open SyncSpeakerPhone.xcodeproj, pick your team under Signing, and run on an iPhone (ARKit needs a device).
+name: SyncSpeakerPhone
+options:
+  bundleIdPrefix: dev.syncspeaker
+  deploymentTarget:
+    iOS: "18.0"
+packages:
+  SyncSpeaker:
+    path: ../..
+targets:
+  SyncSpeakerPhone:
+    type: application
+    platform: iOS
+    sources: [Sources]
+    dependencies:
+      - package: SyncSpeaker
+        product: SyncProtocol
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.syncspeaker.phone
+        SWIFT_VERSION: "5.0"
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: SyncSpeaker
+        INFOPLIST_KEY_NSCameraUsageDescription: "SyncSpeaker uses ARKit to locate your MacBook speakers and follow where you are in the room."
+        INFOPLIST_KEY_NSLocalNetworkUsageDescription: "SyncSpeaker connects to your MacBooks on the local network."
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+    info:
+      path: Sources/Info.plist
+      properties:
+        NSBonjourServices: [_syncspeaker._tcp]
+        UIRequiredDeviceCapabilities: [arkit]
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true

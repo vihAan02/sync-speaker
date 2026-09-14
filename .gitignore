@@ -1,0 +1,9 @@
+.build/
+build/
+.swiftpm/
+web/node_modules/
+web/dist/
+Apps/Phone/*.xcodeproj
+Apps/Phone/Sources/Info.plist
+*.wav
+.DS_Store
