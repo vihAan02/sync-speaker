@@ -54,7 +54,13 @@ brew install xcodegen
 cd Apps/Phone && xcodegen && open SyncSpeakerPhone.xcodeproj
 ```
 
-Set your signing team and run on the phone. **Room tab:** connect to the leader, hold the phone against MacBook A and tap *Phone is touching it*, then repeat for B. Walk around, or *Lock my spot* to put the phone down. **Remote tab:** the web UI.
+Set your signing team and run on the phone. The **Room tab** works in three steps:
+
+1. **Scan.** Sweep the phone slowly over the room, including both MacBooks. LiDAR iPhones draw a mesh colored by surface type (floor, wall, table, seat); other iPhones show detected planes. *Done* unlocks once ARKit has a usable map.
+2. **Place.** Tap MacBook A where you see it in the camera view, then MacBook B. A virtual MacBook drops on that spot. Tap a marker to select it, then tap somewhere else to move it. For the most accurate spot, hold the phone against the Mac and choose *Use phone position* from the ⋯ menu.
+3. **Listen.** Walk around. Each MacBook shows your distance to it plus its delay, gain and channel, with sound paths flowing toward you. Turn *Follow me* off and on to hear the difference, or *Lock spot* to put the phone down.
+
+The map and speaker spots are saved on the phone, so next time you can *Restore saved room* instead of scanning. **Remote tab:** the web UI.
 
 ## How it works
 
@@ -66,6 +72,7 @@ Set your signing team and run on the phone. **Room tab:** connect to the leader,
 | Playout | `Sources/CDSP/cdsp.c` | Real-time C kernel. A PI controller (±200 ppm) corrects device drift; jumps above 5 ms resync with a fade. Cubic interpolation also does sample-rate conversion. Spatial delay is slew-limited to 1 ms/s. |
 | Calibration | `Sources/Calibration` | Up-chirp from A, down-chirp from B. Each node compares arrivals *inside its own recording*, so latencies and clocks cancel: `D = (xA−xB)/2`, `ℓB−ℓA = (xA+xB)/2 − S`. |
 | Spatial v1 | `Sources/SpatialPlanner` | One-euro-smoothed head position. `delay = (r_max − r)/c`, `gain = r/r_max` (≥ −6 dB). L/R follows which speaker is on your left, with a mono zone and hysteresis. |
+| Room mapping | `Apps/Phone/Sources/RoomTracker.swift`, `ARRoomView.swift`, `RoomScene.swift` | ARKit scene reconstruction: a classified mesh on LiDAR iPhones, planes otherwise. Taps hit-test the mesh and fall back to ARKit raycasts. Speaker spots are named `ARAnchor`s saved in an `ARWorldMap`; restoring the map puts the world back in the coordinates the leader already has. |
 | Control | `Sources/ControlServer`, `Sources/MusicControl` | Hummingbird HTTP + WebSockets. Music.app via AppleScript. |
 | Remote | `web/` | React + shadcn/ui + anime.js, built with Vite. Tabs: Play, Room, Speakers. Design rules in `web/DESIGN.md`. `npm run dev` proxies a running leader on :8080. |
 
@@ -73,7 +80,7 @@ Set your signing team and run on the phone. **Room tab:** connect to the leader,
 
 Verified on one Mac (Apple silicon, macOS 26.5):
 
-- 29 unit tests pass: clock convergence under simulated Wi-Fi jitter (5 seeds), drift lock at 80 ppm, a 44.1↔48 kHz conversion, latency-step resync, delay slew, a synthetic chirp calibration recovering distance within 1 cm and latency within 0.1 ms, planner geometry and hysteresis, and protocol round trips.
+- 30 unit tests pass: clock convergence under simulated Wi-Fi jitter (5 seeds), drift lock at 80 ppm, a 44.1↔48 kHz conversion, latency-step resync, delay slew, a synthetic chirp calibration recovering distance within 1 cm and latency within 0.1 ms, planner geometry and hysteresis, and protocol round trips.
 - Leader (tone source) and follower on loopback: follower clock jitter about 9 µs, both nodes locked with about 0.06 ms playout error, 0 underruns.
 - Simulated phone anchors and pose over `/ws/phone`: planner output matches hand-computed delay and gain, and the follower applies its plan. The web UI was checked at phone width.
 - `scripts/build-app.sh` produces a signed, valid `.app`.
@@ -82,11 +89,11 @@ Not yet verified (needs hardware or tools this machine doesn't have):
 
 - **Milestone 1 spike:** whether the global tap captures AirPlay Receiver audio. Run `--capture-test` while AirPlaying. Fallback: set BlackHole as the leader's output device.
 - Two physical MacBooks over Wi-Fi, and acoustic calibration with real speakers and mics.
-- **The iPhone app has not been compiled** (Xcode isn't installed here). Expect small fixes on first build.
+- **The iPhone room-mapping flow** (scan, tap to place, saved rooms) builds for device and simulator, but hasn't been walked through on a phone yet. The simulator has no ARKit.
 
 ## Known limitations
 
 - Total latency is AirPlay's ~2 s plus 300 ms playout. That's fine for music, not for video.
 - While the leader is in speaker mode, all of its other sounds are muted too.
-- ARKit drifts over long sessions. Re-place the speakers if the map looks off.
+- ARKit drifts over long sessions. Use *Move MacBooks* or *New scan* if the markers no longer sit on the Macs.
 - v2 ideas: 3D transaural rendering (HRTF + crosstalk cancellation), Opus transport, more than two nodes, leader election.

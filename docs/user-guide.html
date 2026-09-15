@@ -385,23 +385,27 @@ pre code { background: none; padding: 0; }
         <h2>Follow me with iPhone</h2>
         <p>Optional. The SyncSpeaker iPhone app tells the speakers where you are, so the sound stays centered on you as you move. Without it, set <span class="path">Room<i>›</i>Spatial mode</span> to <em>Off</em> and sit between the Macs.</p>
       </header>
-      <p class="note"><strong>Needs Xcode.</strong> The iPhone app is installed from Xcode (<code>Apps/Phone</code>, see the README) and hasn't been tested on a device yet.</p>
+      <p class="note"><strong>Needs Xcode.</strong> The iPhone app is installed from Xcode (<code>Apps/Phone</code>, see the README). Room mapping is new and hasn't been walked through on a phone yet.</p>
       <ol class="steps">
         <li><div class="step">
           <div class="step-head"><h3>Open the app and connect</h3><span class="chip phone">iPhone</span></div>
-          <p>Allow <strong>Camera</strong> and <strong>Local Network</strong>. On the <span class="path">Room</span> tab it connects to Mac A by itself; if there's more than one, tap Mac A's name.</p>
+          <p>Allow <strong>Camera</strong> and <strong>Local Network</strong>. The app connects to Mac A by itself. If there's more than one leader, tap the name at the top of the <span class="path">Room</span> tab and choose Mac A.</p>
         </div></li>
         <li><div class="step">
-          <div class="step-head"><h3>Place Speaker A</h3><span class="chip phone">iPhone</span><span class="chip a">Mac A</span></div>
-          <p>Hold the top of the phone against Mac A, then tap <span class="path">Phone is touching it</span> next to Speaker A. The button unlocks once the status reads <em>Tracking</em>; move the phone slowly around the room first if it doesn't.</p>
+          <div class="step-head"><h3>Scan the room</h3><span class="chip phone">iPhone</span></div>
+          <p>Sweep the phone slowly over the floor, walls and desks, including both MacBooks. On iPhones with LiDAR a colored mesh shows what's mapped: green floor, blue walls, orange tables. When the meter fills, tap <span class="path">Done, place MacBooks</span>.</p>
         </div></li>
         <li><div class="step">
-          <div class="step-head"><h3>Place Speaker B</h3><span class="chip phone">iPhone</span><span class="chip b">Mac B</span></div>
-          <p>Walk to Mac B and do the same. The app shows the spacing; after calibration it should be within about 5 cm of the acoustic measurement.</p>
+          <div class="step-head"><h3>Tap each MacBook</h3><span class="chip phone">iPhone</span><span class="chip a">Mac A</span><span class="chip b">Mac B</span></div>
+          <p>Point the camera at Mac A and tap it on screen. A virtual MacBook appears on that spot. Then tap Mac B. To move one, tap its marker and tap the right spot. For the most accurate position, hold the phone against the Mac and choose <span class="path">⋯<i>›</i>Use phone position</span>.</p>
         </div></li>
         <li><div class="step">
-          <div class="step-head"><h3>Sit anywhere</h3><span class="chip phone">iPhone</span></div>
-          <p>Hold the phone in front of you as you move, or set it down where you're sitting and turn on <span class="path">Lock my spot</span>. In the remote's <span class="path">Room</span> tab, make sure Spatial mode is <em>Sweet spot</em>; you'll see yourself on the map.</p>
+          <div class="step-head"><h3>Walk around and listen</h3><span class="chip phone">iPhone</span></div>
+          <p>Tap <span class="path">Start listening</span>. Each MacBook shows how far away you are, its delay and level, and whether it's playing left or right. Turn <span class="path">Follow me</span> off and on to hear the difference. To stay in one seat, set the phone down there and turn on <span class="path">Lock spot</span>.</p>
+        </div></li>
+        <li><div class="step">
+          <div class="step-head"><h3>Next time</h3><span class="chip phone">iPhone</span></div>
+          <p>The room is saved on the phone. Choose <span class="path">Restore saved room</span> and point at the MacBooks to skip scanning, as long as they haven't moved.</p>
         </div></li>
       </ol>
     </section>
@@ -465,7 +469,7 @@ pre code { background: none; padding: 0; }
         </div>
         <div class="fix">
           <h3>The map in the Room tab looks wrong</h3>
-          <p>Tap <span class="path">Reset</span> in the iPhone app and place both speakers again. ARKit drifts over long sessions.</p>
+          <p>In the iPhone app, tap <span class="path">Move MacBooks</span> and tap each Mac again, or <span class="path">New scan</span> to start over. ARKit drifts over long sessions.</p>
         </div>
       </div>
     </section>

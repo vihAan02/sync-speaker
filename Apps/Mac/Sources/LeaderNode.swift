@@ -333,6 +333,8 @@ final class LeaderNode: @unchecked Sendable {
                 pose = nil
                 locked = false
                 planner.resetSmoothing()
+            case .spatialMode(let mode):
+                settings.spatialMode = mode
             }
         }
     }

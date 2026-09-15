@@ -39,6 +39,13 @@ final class LeaderConnection {
     @ObservationIgnored private let encoder = JSONEncoder()
     @ObservationIgnored private var reconnectWork: Task<Void, Never>?
 
+    var isConnected: Bool {
+        if case .connected = status { true } else { false }
+    }
+
+    /// Called each time the WebSocket opens, so the phone can resend its room to the leader.
+    @ObservationIgnored var onConnected: (@MainActor () -> Void)?
+
     var webURL: URL? {
         current.flatMap { URL(string: "http://\($0.host):\($0.httpPort)") }
     }
@@ -104,9 +111,10 @@ final class LeaderConnection {
                 guard let self, self.task === task else { return }
                 switch result {
                 case .success(let message):
-                    if case .connected = self.status {} else {
+                    if !self.isConnected {
                         self.status = .connected(self.current?.name ?? "leader")
                         self.lastError = nil
+                        self.onConnected?()
                     }
                     if case .string(let text) = message,
                        let envelope = try? JSONDecoder().decode(StateEnvelope.self, from: Data(text.utf8)) {

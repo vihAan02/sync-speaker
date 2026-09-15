@@ -42,4 +42,10 @@ import Testing
         let message = try JSONDecoder().decode(PhoneMessage.self, from: Data(json.utf8))
         #expect(message == .pose(ListenerPose(position: [1, 0, 2], forward: [0, -1], tracking: .normal)))
     }
+
+    @Test func phoneSpatialModeRoundTrip() throws {
+        let json = String(decoding: try JSONEncoder().encode(PhoneMessage.spatialMode(.off)), as: UTF8.self)
+        #expect(json == #"{"spatialMode":{"_0":"off"}}"#)
+        #expect(try JSONDecoder().decode(PhoneMessage.self, from: Data(json.utf8)) == .spatialMode(.off))
+    }
 }

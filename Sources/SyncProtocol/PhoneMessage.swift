@@ -7,6 +7,8 @@ public enum PhoneMessage: Codable, Equatable, Sendable {
     case pose(ListenerPose)
     case lock(Bool)
     case resetRoom
+    /// Lets the listener A/B the effect while walking around.
+    case spatialMode(SpatialMode)
 }
 
 public struct SpeakerAnchor: Codable, Equatable, Sendable {

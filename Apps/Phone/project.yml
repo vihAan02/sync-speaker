@@ -24,7 +24,7 @@ targets:
         TARGETED_DEVICE_FAMILY: "1"
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: SyncSpeaker
-        INFOPLIST_KEY_NSCameraUsageDescription: "SyncSpeaker uses ARKit to locate your MacBook speakers and follow where you are in the room."
+        INFOPLIST_KEY_NSCameraUsageDescription: "SyncSpeaker uses the camera to map your room, show where your MacBook speakers are and follow where you are."
         INFOPLIST_KEY_NSLocalNetworkUsageDescription: "SyncSpeaker connects to your MacBooks on the local network."
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
