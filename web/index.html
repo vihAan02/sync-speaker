@@ -3,124 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)" />
-    <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="SyncSpeaker" />
     <title>SyncSpeaker</title>
-    <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <header class="top">
-      <div>
-        <h1>SyncSpeaker</h1>
-        <p id="subtitle" class="muted">Connecting…</p>
-      </div>
-      <span id="conn" class="pill">offline</span>
-    </header>
-
-    <main>
-      <section id="tab-play" class="tab" data-tab="play">
-        <div class="card now">
-          <p class="eyebrow">Now playing</p>
-          <h2 id="track">Nothing playing</h2>
-          <p id="artist" class="muted"></p>
-          <div class="progress"><div id="progress-bar"></div></div>
-          <div class="transport">
-            <button data-music="previous" aria-label="Previous">⏮</button>
-            <button data-music="playpause" class="primary" id="playpause" aria-label="Play or pause">⏯</button>
-            <button data-music="next" aria-label="Next">⏭</button>
-          </div>
-          <label class="row">
-            <span>Music volume</span>
-            <input id="music-volume" type="range" min="0" max="100" step="1" />
-          </label>
-        </div>
-
-        <div class="card">
-          <p class="eyebrow">Source</p>
-          <p id="source-hint">
-            AirPlay Apple Music from your iPhone to <strong class="leader-name">the leader Mac</strong>, or
-            play from Music.app on it.
-          </p>
-          <div class="meter"><div id="level"></div></div>
-          <p id="capture-status" class="muted small"></p>
-        </div>
-
-        <div class="card">
-          <p class="eyebrow">Library</p>
-          <form id="search-form" class="search">
-            <input id="search" type="search" placeholder="Search your Music library" autocomplete="off" />
-            <button type="submit">Search</button>
-          </form>
-          <ul id="results" class="list"></ul>
-          <details id="playlists-box">
-            <summary>Playlists</summary>
-            <ul id="playlists" class="list"></ul>
-          </details>
-        </div>
-      </section>
-
-      <section id="tab-room" class="tab" data-tab="room" hidden>
-        <div class="card map-card">
-          <canvas id="room"></canvas>
-          <div class="map-legend">
-            <span id="tracking" class="pill">no phone</span>
-            <span id="anchored" class="muted small"></span>
-          </div>
-        </div>
-        <div class="card">
-          <p class="eyebrow">Spatial mode</p>
-          <div class="segmented" id="spatial-mode">
-            <button data-mode="off">Off</button>
-            <button data-mode="sweetSpot">Sweet spot</button>
-          </div>
-          <p class="muted small">
-            Sweet spot delays and levels each MacBook so both reach you together, and keeps left/right on the correct
-            side. Place the speakers and track yourself with the SyncSpeaker iPhone app.
-          </p>
-        </div>
-      </section>
-
-      <section id="tab-speakers" class="tab" data-tab="speakers" hidden>
-        <div id="nodes"></div>
-        <div class="card">
-          <p class="eyebrow">Acoustic sync calibration</p>
-          <p class="muted small">
-            Each MacBook plays a short chirp and both listen. This measures the distance between them and trims any
-            leftover playback offset. Run it in a quiet room; run twice to confirm the residual is under 0.5 ms.
-          </p>
-          <div class="actions">
-            <button id="calibrate" class="primary">Calibrate sync</button>
-            <button id="reset-trim">Reset trim</button>
-          </div>
-          <p id="calibration" class="small"></p>
-        </div>
-      </section>
-
-      <section id="tab-settings" class="tab" data-tab="settings" hidden>
-        <div class="card">
-          <label class="row">
-            <span>Speaker volume</span>
-            <input id="master" type="range" min="0" max="1" step="0.01" />
-          </label>
-          <label class="row">
-            <span>Playout latency <output id="latency-value"></output></span>
-            <input id="latency" type="range" min="80" max="800" step="10" />
-          </label>
-          <p class="muted small">
-            Higher latency survives worse Wi-Fi. Changing it briefly re-syncs playback.
-          </p>
-        </div>
-      </section>
-    </main>
-
-    <nav class="tabs">
-      <button data-go="play" class="active">Play</button>
-      <button data-go="room">Room</button>
-      <button data-go="speakers">Speakers</button>
-      <button data-go="settings">Settings</button>
-    </nav>
-
-    <script type="module" src="/src/main.ts"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

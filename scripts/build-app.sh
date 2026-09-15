@@ -12,7 +12,7 @@ APP=build/SyncSpeaker.app
 SUPPORT=Apps/Mac/Support
 
 if command -v npm >/dev/null; then
-  (cd web && [[ -d node_modules ]] || npm install --no-audit --no-fund) && (cd web && npm run build)
+  (cd web && npm install --no-audit --no-fund && npm run build)
 else
   echo "npm not found; using existing web/dist" >&2
 fi

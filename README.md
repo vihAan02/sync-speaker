@@ -15,7 +15,7 @@ iPhone ──AirPlay──▶ LEADER Mac (Speaker A) ─────────
 ## Requirements
 
 - Two MacBooks on macOS 15 or later (system audio taps need 14.4+), on the same Wi-Fi.
-- Swift 6 toolchain (Command Line Tools are enough for the Mac app) and Node 18+ for the web UI.
+- Swift 6 toolchain (Command Line Tools are enough for the Mac app) and Node 20.19+ for the web UI. The remote needs Safari/iOS 16.4 or later.
 - For the iPhone app: **Xcode** plus [XcodeGen](https://github.com/yonaskolb/XcodeGen) and an ARKit-capable iPhone.
 
 ## Build and run
@@ -67,6 +67,7 @@ Set your signing team and run on the phone. **Room tab:** connect to the leader,
 | Calibration | `Sources/Calibration` | Up-chirp from A, down-chirp from B. Each node compares arrivals *inside its own recording*, so latencies and clocks cancel: `D = (xA−xB)/2`, `ℓB−ℓA = (xA+xB)/2 − S`. |
 | Spatial v1 | `Sources/SpatialPlanner` | One-euro-smoothed head position. `delay = (r_max − r)/c`, `gain = r/r_max` (≥ −6 dB). L/R follows which speaker is on your left, with a mono zone and hysteresis. |
 | Control | `Sources/ControlServer`, `Sources/MusicControl` | Hummingbird HTTP + WebSockets. Music.app via AppleScript. |
+| Remote | `web/` | React + shadcn/ui + anime.js, built with Vite. Tabs: Play, Room, Speakers. Design rules in `web/DESIGN.md`. `npm run dev` proxies a running leader on :8080. |
 
 ## Status
 
