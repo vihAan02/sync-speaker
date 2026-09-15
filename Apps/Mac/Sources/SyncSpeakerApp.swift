@@ -5,18 +5,22 @@ import SwiftUI
 import SyncProtocol
 
 struct SyncSpeakerApp: App {
-    @State private var runner = NodeRunner(settings: SettingsStore(), music: MusicController())
+    @State private var runner: NodeRunner
+
+    /// Resume the saved role at launch, not when the menu is first opened, so the web UI is served right away.
+    init() {
+        let runner = NodeRunner(settings: SettingsStore(), music: MusicController())
+        AVCaptureDevice.requestAccess(for: .audio) { _ in }
+        if let role = runner.settings.role {
+            try? runner.start(role: role, leaderHost: runner.settings.leaderHost, webRoot: WebRoot.resolve(nil))
+        }
+        _runner = State(initialValue: runner)
+    }
 
     var body: some Scene {
         MenuBarExtra("SyncSpeaker", systemImage: "hifispeaker.2.fill") {
             MenuContent(runner: runner)
                 .frame(width: 360)
-                .task {
-                    AVCaptureDevice.requestAccess(for: .audio) { _ in }
-                    if let role = runner.settings.role {
-                        try? runner.start(role: role, leaderHost: runner.settings.leaderHost, webRoot: WebRoot.resolve(nil))
-                    }
-                }
         }
         .menuBarExtraStyle(.window)
     }
