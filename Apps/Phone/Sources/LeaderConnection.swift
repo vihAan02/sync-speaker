@@ -25,10 +25,17 @@ final class LeaderConnection {
     private(set) var status: Status = .disconnected
     private(set) var state: UIState?
     private(set) var current: DiscoveredLeader?
+    /// Why the last attempt failed; shown while retrying, cleared once connected.
+    private(set) var lastError: String?
 
     @ObservationIgnored private var browser: NWBrowser?
     @ObservationIgnored private var task: URLSessionWebSocketTask?
-    @ObservationIgnored private let session = URLSession(configuration: .default)
+    @ObservationIgnored private let session: URLSession = {
+        let config = URLSessionConfiguration.default
+        // Fail fast on the LAN instead of the 60 s default; the leader pushes state every 500 ms once open.
+        config.timeoutIntervalForRequest = 5
+        return URLSession(configuration: config)
+    }()
     @ObservationIgnored private let encoder = JSONEncoder()
     @ObservationIgnored private var reconnectWork: Task<Void, Never>?
 
@@ -58,6 +65,11 @@ final class LeaderConnection {
     }
 
     func connect(to leader: DiscoveredLeader) {
+        lastError = nil
+        open(leader)
+    }
+
+    private func open(_ leader: DiscoveredLeader) {
         disconnect()
         current = leader
         status = .connecting(leader.name)
@@ -92,13 +104,17 @@ final class LeaderConnection {
                 guard let self, self.task === task else { return }
                 switch result {
                 case .success(let message):
-                    if case .connected = self.status {} else { self.status = .connected(self.current?.name ?? "leader") }
+                    if case .connected = self.status {} else {
+                        self.status = .connected(self.current?.name ?? "leader")
+                        self.lastError = nil
+                    }
                     if case .string(let text) = message,
                        let envelope = try? JSONDecoder().decode(StateEnvelope.self, from: Data(text.utf8)) {
                         self.state = envelope.state
                     }
                     self.receive(on: task)
-                case .failure:
+                case .failure(let error):
+                    self.lastError = Self.describe(error, host: self.current?.host)
                     self.scheduleReconnect()
                 }
             }
@@ -112,7 +128,23 @@ final class LeaderConnection {
         reconnectWork = Task { [weak self] in
             try? await Task.sleep(for: .seconds(2))
             guard !Task.isCancelled else { return }
-            self?.connect(to: leader)
+            self?.open(leader)
+        }
+    }
+
+    private static func describe(_ error: Error, host: String?) -> String {
+        let host = host ?? "the Mac"
+        switch (error as? URLError)?.code {
+        case .cannotConnectToHost:
+            return "\(host) refused the connection. Is SyncSpeaker running as leader there?"
+        case .cannotFindHost, .dnsLookupFailed:
+            return "Can't find \(host) on this network."
+        case .timedOut:
+            return "\(host) didn't answer. Check that both devices are on the same network."
+        case .notConnectedToInternet:
+            return "This iPhone isn't on a network."
+        default:
+            return error.localizedDescription
         }
     }
 

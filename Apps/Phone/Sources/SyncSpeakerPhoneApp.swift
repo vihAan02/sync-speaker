@@ -83,6 +83,11 @@ struct RoomScreen: View {
             if connection.leaders.isEmpty {
                 Text("Looking for SyncSpeaker on this Wi-Fi…").foregroundStyle(.secondary)
             }
+            if let error = connection.lastError {
+                Label(error + " Retrying…", systemImage: "exclamationmark.triangle")
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+            }
             ForEach(connection.leaders) { leader in
                 Button {
                     connection.connect(to: leader)

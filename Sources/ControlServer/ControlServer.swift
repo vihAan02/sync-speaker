@@ -94,7 +94,8 @@ public struct ControlServer: Sendable {
         let app = Application(
             router: router,
             server: .http1WebSocketUpgrade(webSocketRouter: ws),
-            configuration: .init(address: .hostname("0.0.0.0", port: port), serverName: "SyncSpeaker"),
+            // "::" listens on IPv6 and IPv4 alike; iPhone Personal Hotspot is IPv6-only, so "0.0.0.0" is unreachable there.
+            configuration: .init(address: .hostname("::", port: port), serverName: "SyncSpeaker"),
             logger: logger
         )
         try await app.run()
