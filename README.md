@@ -47,7 +47,6 @@ source code if the build needs it, and tell me if you do.
 ## Requirements
 
 - Two MacBooks on macOS 15 or later, on the same Wi-Fi network.
-- An iPhone with Apple Music.
 - To build: a Swift 6 toolchain (the Xcode Command Line Tools are enough) and Node 20.19 or later.
 - The web remote needs Safari / iOS 16.4 or later.
 - Optional, for listener tracking: an ARKit-capable iPhone, Xcode and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
