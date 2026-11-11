@@ -211,10 +211,6 @@ pre code { background: none; padding: 0; }
         <span class="chip b">Mac B · follower</span>
         <span class="chip phone">iPhone</span>
       </div>
-      <p class="note">
-        <strong>Early build.</strong> Sync has been tested on one Mac so far. If Mac A is silent when you AirPlay to it,
-        see <a href="#trouble">Troubleshooting</a>. That's the first thing to confirm on real hardware.
-      </p>
     </header>
 
     <section id="before">
@@ -241,8 +237,10 @@ pre code { background: none; padding: 0; }
       <ol class="steps">
         <li><div class="step">
           <div class="step-head"><h3>Build the app</h3><span class="chip both">either Mac</span></div>
-          <p>In Terminal, from the <code>sync-speaker</code> folder:</p>
-          <pre><code>scripts/build-app.sh</code></pre>
+          <p>In Terminal, download the project and build it:</p>
+          <pre><code>git clone https://github.com/vihAan02/sync-speaker.git
+cd sync-speaker
+scripts/build-app.sh</code></pre>
           <p class="caption">This creates <code>build/SyncSpeaker.app</code>. It needs Node and the Xcode Command Line Tools.</p>
         </div></li>
         <li><div class="step">
@@ -321,7 +319,7 @@ pre code { background: none; padding: 0; }
           <div class="menu" role="img" aria-label="Example of the follower menu">
             <div class="title">SyncSpeaker</div>
             <div class="seg"><span>Off</span><span>Leader (A)</span><span class="on">Follower (B)</span></div>
-            <div class="ok">Link: connected to Vihaan's MacBook Pro</div>
+            <div class="ok">Link: connected to MacBook Pro</div>
             <div>Clock: offset 0.009 ms · jitter 0.007 ms · rtt 3.1 ms</div>
             <div class="ok">Playout: locked · err 0.000 ms · buffer 242 ms · underruns 0</div>
           </div>
@@ -332,7 +330,7 @@ pre code { background: none; padding: 0; }
           <p>
             Type Mac A's network name in the <em>Leader host</em> field and press Return, then select Follower (B) again.
             Find the name on Mac A in <span class="path">System Settings<i>›</i>General<i>›</i>Sharing</span>, under
-            <em>Local hostname</em>, for example <code>Vihaans-MacBook-Pro.local</code>.
+            <em>Local hostname</em>, for example <code>MacBook-Pro.local</code>.
           </p>
         </div></li>
       </ol>
@@ -385,7 +383,7 @@ pre code { background: none; padding: 0; }
         <h2>Follow me with iPhone</h2>
         <p>Optional. The SyncSpeaker iPhone app tells the speakers where you are, so the sound stays centered on you as you move. Without it, set <span class="path">Room<i>›</i>Spatial mode</span> to <em>Off</em> and sit between the Macs.</p>
       </header>
-      <p class="note"><strong>Needs Xcode.</strong> The iPhone app is installed from Xcode (<code>Apps/Phone</code>, see the README). Room mapping is new and hasn't been walked through on a phone yet.</p>
+      <p class="note"><strong>Needs Xcode.</strong> The iPhone app is installed from Xcode (<code>Apps/Phone</code>, see the README).</p>
       <ol class="steps">
         <li><div class="step">
           <div class="step-head"><h3>Open the app and connect</h3><span class="chip phone">iPhone</span></div>
@@ -445,7 +443,7 @@ pre code { background: none; padding: 0; }
         </div>
         <div class="fix">
           <h3>AirPlay connects but nothing plays, and the level meter stays empty</h3>
-          <p>Confirm System Audio Recording is allowed for SyncSpeaker, then select Off and Leader (A) again. If it's still silent, run <code>SyncSpeaker.app/Contents/MacOS/SyncSpeaker --capture-test 10 test.wav</code> in Terminal while AirPlaying and share the result: AirPlay capture may need the BlackHole workaround.</p>
+          <p>Confirm System Audio Recording is allowed for SyncSpeaker, then select Off and Leader (A) again. If it's still silent, run <code>SyncSpeaker.app/Contents/MacOS/SyncSpeaker --capture-test 10 test.wav</code> in Terminal while AirPlaying. It reports the peak level it heard; silence means the audio isn't reaching SyncSpeaker.</p>
         </div>
         <div class="fix">
           <h3>"Capture: off" with an error in the menu</h3>
