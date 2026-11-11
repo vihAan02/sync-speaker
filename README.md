@@ -12,6 +12,38 @@ iPhone ──AirPlay──▶ LEADER Mac (Speaker A) ─────────
   └─ browser ──── http :8080, ws /ws/ui ────────▶ web remote + Music.app control
 ```
 
+## Don't want to install it by hand?
+
+Paste this into a coding agent (Claude Code, Codex, Cursor or similar) on **each** Mac:
+
+```text
+Set up SyncSpeaker (https://github.com/vihAan02/sync-speaker) on this Mac.
+
+1. Check prerequisites: macOS 15 or later, the Xcode Command Line Tools
+   (`xcode-select -p`), Swift 6 (`swift --version`) and Node 20.19 or later
+   (`node --version`). If anything is missing, tell me what to install and
+   wait for my OK before installing anything system-wide.
+2. Clone the repo into ~/sync-speaker, or pull if it's already there.
+3. Run `scripts/test.sh` and confirm the tests pass.
+4. Run `scripts/build-app.sh` to build `build/SyncSpeaker.app`. If I have an
+   Apple Development signing identity (`security find-identity -v -p codesigning`),
+   ask whether to build with `SIGN_ID="<identity>"` so macOS keeps its
+   permissions across rebuilds.
+5. Copy the app to /Applications and open it. It lives in the menu bar, not the Dock.
+6. Ask me whether this Mac is the leader (Mac A, receives AirPlay) or the
+   follower (Mac B). Then walk me through the steps only I can do, following
+   the README's Install section: turning on AirPlay Receiver (leader only),
+   choosing the role from the menu-bar icon, and allowing System Audio
+   Recording, Local Network and Microphone when macOS asks. Don't change
+   system settings yourself.
+7. Once both Macs are running, have me open the web remote at
+   http://<leader>.local:8080 and run Calibrate sync twice from the Speakers tab.
+
+Skip the iPhone app unless I ask for it (it needs Xcode). If a step fails,
+show me the error and fix it before moving on. Only change the project's
+source code if the build needs it, and tell me if you do.
+```
+
 ## Requirements
 
 - Two MacBooks on macOS 15 or later, on the same Wi-Fi network.
