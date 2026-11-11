@@ -1,7 +1,7 @@
 import AudioIO
 import Foundation
 
-/// Milestone-1 spike: proves the global tap hears AirPlay/Music.app audio and mutes the speakers.
+/// Diagnostic: records the system tap to a WAV to check it hears AirPlay/Music.app audio and mutes the speakers.
 enum CaptureTest {
     static func run(seconds: Double, path: String) throws {
         let tap = SystemAudioTap()

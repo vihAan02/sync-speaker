@@ -14,55 +14,87 @@ iPhone ──AirPlay──▶ LEADER Mac (Speaker A) ─────────
 
 ## Requirements
 
-- Two MacBooks on macOS 15 or later (system audio taps need 14.4+), on the same Wi-Fi.
-- Swift 6 toolchain (Command Line Tools are enough for the Mac app) and Node 20.19+ for the web UI. The remote needs Safari/iOS 16.4 or later.
-- For the iPhone app: **Xcode** plus [XcodeGen](https://github.com/yonaskolb/XcodeGen) and an ARKit-capable iPhone.
+- Two MacBooks on macOS 15 or later, on the same Wi-Fi network.
+- An iPhone with Apple Music.
+- To build: a Swift 6 toolchain (the Xcode Command Line Tools are enough) and Node 20.19 or later.
+- The web remote needs Safari / iOS 16.4 or later.
+- Optional, for listener tracking: an ARKit-capable iPhone, Xcode and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
-## Build and run
+## Install
 
-```bash
-scripts/test.sh                 # unit tests
-scripts/build-app.sh            # → build/SyncSpeaker.app (web UI bundled)
-```
-
-Copy `build/SyncSpeaker.app` to both MacBooks and open it. It lives in the menu bar.
-
-1. **Mac 1:** choose **Leader (A)**. On first use macOS asks for *System Audio Recording*. Grant it, then pick Leader again.
-2. **Mac 2:** choose **Follower (B)**. It finds the leader over Bonjour; you can also type the leader's host name.
-3. **iPhone:** AirPlay Apple Music to the leader Mac. Enable *System Settings › General › AirDrop & Handoff › AirPlay Receiver* on the leader first. Only the synced playout is audible; the tap mutes the Mac's normal output.
-4. Open `http://<leader>.local:8080` on your phone for the remote, or use the iPhone app.
-5. **Speakers tab › Calibrate sync** in a quiet room. It trims the follower's playback offset and measures the spacing. Run it twice; the second "measured offset" should be under 0.5 ms.
-
-Sign with your own identity to keep privacy grants across rebuilds:
-`SIGN_ID="Apple Development: …" scripts/build-app.sh`.
-
-### Headless / testing modes
+### 1. Build the Mac app
 
 ```bash
-B=.build/debug/SyncSpeaker
-$B --capture-test 10 out.wav                      # does the tap hear AirPlay/Music? writes a WAV
-$B --role leader --source tone --volume 0.2       # alternating L/R tone bursts instead of the tap
-$B --role follower --leader-host MacBook.local
+git clone https://github.com/vihAan02/sync-speaker.git
+cd sync-speaker
+scripts/build-app.sh            # → build/SyncSpeaker.app (web remote bundled)
 ```
 
-A leader with `--source tone` and a follower can run on the **same** Mac to exercise the full network, clock and playout path.
+Copy `build/SyncSpeaker.app` into Applications on both MacBooks and open it. It lives in the menu bar and has no Dock icon. If macOS says the app can't be opened, Control-click it and choose **Open**.
 
-### iPhone app
+Without a signing identity the app is ad-hoc signed, so macOS asks for its privacy permissions again after every rebuild. To keep them, sign with your own identity:
+
+```bash
+SIGN_ID="Apple Development: …" scripts/build-app.sh
+```
+
+### 2. Mac A: the leader
+
+1. Turn on **System Settings › General › AirDrop & Handoff › AirPlay Receiver**.
+2. Click the SyncSpeaker menu-bar icon and choose **Leader (A)**.
+3. Allow **System Audio Recording** and **Local Network** when asked. If you miss a prompt, turn it on under *Privacy & Security › Screen & System Audio Recording*, then choose **Off** and **Leader (A)** again.
+
+While Mac A is the leader, its other sounds are muted. Only the synced playout is audible.
+
+### 3. Mac B: the follower
+
+Choose **Follower (B)** and allow Local Network. Mac B finds the leader over Bonjour, and within a few seconds the menu shows the link as connected and playout as locked. If it stays on "searching for leader…", type Mac A's local hostname (from *System Settings › General › Sharing*) into the **Leader host** field.
+
+### 4. Play music
+
+- **AirPlay:** in Apple Music on your iPhone, AirPlay to Mac A only, never to Mac B. Sound starts about 2 seconds after you press play.
+- **Web remote:** open `http://<mac-a>.local:8080` in Safari, or click **Open Web UI** in Mac A's menu. It controls Music.app on Mac A: play, pause, skip, search and playlists.
+
+### 5. Calibrate
+
+In a quiet room, open the remote's **Speakers** tab and tap **Calibrate sync**. Both Macs ask for Microphone access the first time. Run it twice: the first run corrects the follower's offset, and the second should report a measured offset under 0.5 ms and roughly the real distance between the Macs.
+
+### 6. iPhone app (optional)
+
+The iPhone app tells the speakers where you are, so the sound stays centered on you as you move. Without it, set **Room › Spatial mode** to Off in the remote and sit between the Macs.
 
 ```bash
 brew install xcodegen
 cd Apps/Phone && xcodegen && open SyncSpeakerPhone.xcodeproj
 ```
 
-Set your signing team and run on the phone. The **Room tab** works in three steps:
+Set your signing team and run it on the phone. Allow Camera and Local Network, and it connects to the leader by itself. The **Room** tab works in three steps:
 
 1. **Scan.** Sweep the phone slowly over the room, including both MacBooks. LiDAR iPhones draw a mesh colored by surface type (floor, wall, table, seat); other iPhones show detected planes. *Done* unlocks once ARKit has a usable map.
-2. **Place.** Tap MacBook A where you see it in the camera view, then MacBook B. A virtual MacBook drops on that spot. Tap a marker to select it, then tap somewhere else to move it. For the most accurate spot, hold the phone against the Mac and choose *Use phone position* from the ⋯ menu.
-3. **Listen.** Walk around. Each MacBook shows your distance to it plus its delay, gain and channel, with sound paths flowing toward you. Turn *Follow me* off and on to hear the difference, or *Lock spot* to put the phone down.
+2. **Place.** Tap MacBook A where you see it in the camera view, then MacBook B. A virtual MacBook drops on each spot. To move one, tap its marker, then tap the right spot. For the most accurate position, hold the phone against the Mac and choose *Use phone position* from the ⋯ menu.
+3. **Listen.** Walk around. Each MacBook shows your distance to it plus its delay, gain and channel. Turn *Follow me* off and on to hear the difference, or use *Lock spot* to put the phone down.
 
-The map and speaker spots are saved on the phone, so next time you can *Restore saved room* instead of scanning. **Remote tab:** the web UI.
+The map and speaker spots are saved on the phone, so next time you can choose *Restore saved room* instead of scanning. The **Remote** tab is the web remote.
+
+### Everyday use
+
+Both Macs remember their role and calibration. Open SyncSpeaker on both, in any order, then AirPlay to Mac A. To start it automatically, add it under *System Settings › General › Login Items* on both Macs. Choose **Off** or quit to get Mac A's normal sound back.
+
+## Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| Mac A isn't in the AirPlay list | Check that AirPlay Receiver is on and set to *Anyone on the Same Network*, and that the iPhone is on the same Wi-Fi. |
+| AirPlay connects but nothing plays | Confirm System Audio Recording is allowed, then choose **Off** and **Leader (A)** again. To check capture directly, run `SyncSpeaker.app/Contents/MacOS/SyncSpeaker --capture-test 10 test.wav` while AirPlaying. It reports the peak level it heard. |
+| Mac B keeps searching for the leader | Allow Local Network on both Macs and type Mac A's hostname on Mac B. If the firewall is on, allow incoming connections for SyncSpeaker on Mac A. |
+| Crackles or dropouts | In the remote's **Speakers** tab, raise *Playout latency* to 500 ms. 5 GHz Wi-Fi also helps. |
+| Doubled or echoey sound | AirPlay to Mac A only, then run **Calibrate sync** twice. |
+| Calibration says the chirps are too quiet | Turn both Macs' volume up, keep them within 5 m of each other with nothing in between, and try again somewhere quieter. |
+| Speaker markers no longer sit on the Macs | ARKit drifts over long sessions. In the iPhone app, use *Move MacBooks* or *New scan*. |
 
 ## How it works
+
+The leader taps the Mac's system audio (muted, so its own speakers stay silent), cuts it into 10 ms chunks stamped against a shared clock, and streams them to the follower over TCP. Both Macs run the same playout engine and play each chunk at the same moment on that clock, about 300 ms after capture. A UDP ping/pong exchange keeps the follower's clock locked to the leader's, and a one-time acoustic calibration measures any remaining offset plus the distance between the speakers. When the iPhone app reports where you are, the leader's planner sends each Mac a delay, gain and left/right channel 20 times a second, so the sound from both speakers reaches you together.
 
 | Piece | Where | Notes |
 |---|---|---|
@@ -71,29 +103,33 @@ The map and speaker spots are saved on the phone, so next time you can *Restore 
 | Clock sync | `Sources/ClockSync`, `Sources/Transport/ClockService.swift` | NTP-style pings at 10 Hz. The lowest-RTT exchange per block feeds an RTT-weighted regression for offset and skew. |
 | Playout | `Sources/CDSP/cdsp.c` | Real-time C kernel. A PI controller (±200 ppm) corrects device drift; jumps above 5 ms resync with a fade. Cubic interpolation also does sample-rate conversion. Spatial delay is slew-limited to 1 ms/s. |
 | Calibration | `Sources/Calibration` | Up-chirp from A, down-chirp from B. Each node compares arrivals *inside its own recording*, so latencies and clocks cancel: `D = (xA−xB)/2`, `ℓB−ℓA = (xA+xB)/2 − S`. |
-| Spatial v1 | `Sources/SpatialPlanner` | One-euro-smoothed head position. `delay = (r_max − r)/c`, `gain = r/r_max` (≥ −6 dB). L/R follows which speaker is on your left, with a mono zone and hysteresis. |
+| Spatial rendering | `Sources/SpatialPlanner` | One-euro-smoothed head position. `delay = (r_max − r)/c`, `gain = r/r_max` (≥ −6 dB). L/R follows which speaker is on your left, with a mono zone and hysteresis. |
 | Room mapping | `Apps/Phone/Sources/RoomTracker.swift`, `ARRoomView.swift`, `RoomScene.swift` | ARKit scene reconstruction: a classified mesh on LiDAR iPhones, planes otherwise. Taps hit-test the mesh and fall back to ARKit raycasts. Speaker spots are named `ARAnchor`s saved in an `ARWorldMap`; restoring the map puts the world back in the coordinates the leader already has. |
 | Control | `Sources/ControlServer`, `Sources/MusicControl` | Hummingbird HTTP + WebSockets. Music.app via AppleScript. |
-| Remote | `web/` | React + shadcn/ui + anime.js, built with Vite. Tabs: Play, Room, Speakers. Design rules in `web/DESIGN.md`. `npm run dev` proxies a running leader on :8080. |
+| Remote | `web/` | React + shadcn/ui + anime.js, built with Vite. Tabs: Play, Room, Speakers. |
 
-## Status
+## Development
 
-Verified on one Mac (Apple silicon, macOS 26.5):
+```bash
+scripts/test.sh                 # unit tests
+swift build                     # debug build → .build/debug/SyncSpeaker
+```
 
-- 30 unit tests pass: clock convergence under simulated Wi-Fi jitter (5 seeds), drift lock at 80 ppm, a 44.1↔48 kHz conversion, latency-step resync, delay slew, a synthetic chirp calibration recovering distance within 1 cm and latency within 0.1 ms, planner geometry and hysteresis, and protocol round trips.
-- Leader (tone source) and follower on loopback: follower clock jitter about 9 µs, both nodes locked with about 0.06 ms playout error, 0 underruns.
-- Simulated phone anchors and pose over `/ws/phone`: planner output matches hand-computed delay and gain, and the follower applies its plan. The web UI was checked at phone width.
-- `scripts/build-app.sh` produces a signed, valid `.app`.
+Headless modes, handy for testing without AirPlay:
 
-Not yet verified (needs hardware or tools this machine doesn't have):
+```bash
+B=.build/debug/SyncSpeaker
+$B --capture-test 10 out.wav                      # record the system tap to a WAV
+$B --role leader --source tone --volume 0.2       # alternating L/R tone bursts instead of the tap
+$B --role follower --leader-host MacBook.local
+```
 
-- **Milestone 1 spike:** whether the global tap captures AirPlay Receiver audio. Run `--capture-test` while AirPlaying. Fallback: set BlackHole as the leader's output device.
-- Two physical MacBooks over Wi-Fi, and acoustic calibration with real speakers and mics.
-- **The iPhone room-mapping flow** (scan, tap to place, saved rooms) builds for device and simulator, but hasn't been walked through on a phone yet. The simulator has no ARKit.
+A tone leader and a follower can run on the **same** Mac to exercise the full network, clock and playout path.
+
+To work on the web remote, run `npm install && npm run dev` in `web/`. The Vite dev server proxies `/api` and `/ws` to a leader running on port 8080.
 
 ## Known limitations
 
-- Total latency is AirPlay's ~2 s plus 300 ms playout. That's fine for music, not for video.
-- While the leader is in speaker mode, all of its other sounds are muted too.
-- ARKit drifts over long sessions. Use *Move MacBooks* or *New scan* if the markers no longer sit on the Macs.
-- v2 ideas: 3D transaural rendering (HRTF + crosstalk cancellation), Opus transport, more than two nodes, leader election.
+- Total latency is AirPlay's ~2 s plus ~300 ms of playout. That's fine for music, not for video.
+- While Mac A is the leader, all of its other sounds are muted too.
+- Two speakers only.

@@ -7,3 +7,6 @@ Apps/Phone/*.xcodeproj
 Apps/Phone/Sources/Info.plist
 *.wav
 .DS_Store
+.claude/
+notes/
+web/DESIGN.md

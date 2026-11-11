@@ -7,7 +7,7 @@ import SyncProtocol
 ///   SyncSpeaker                                       menu-bar app (role chosen in the menu)
 ///   SyncSpeaker --role leader [--source tap|tone] [--web-root DIR] [--volume 0...1]
 ///   SyncSpeaker --role follower [--leader-host HOST]
-///   SyncSpeaker --capture-test SECONDS OUT.wav        milestone-1 spike: record the system tap to a WAV
+///   SyncSpeaker --capture-test SECONDS OUT.wav        record the system tap to a WAV (diagnostic)
 struct CommandLineOptions {
     var role: NodeRole?
     var source = LeaderSource.Kind.systemTap

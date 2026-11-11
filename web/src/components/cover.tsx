@@ -4,7 +4,7 @@ import { LevelMeter } from "@/components/motion-widgets";
 import { cn } from "@/lib/utils";
 import { ms, reducedMotion } from "@/lib/motion";
 
-// Vercel's mesh-gradient stops (DESIGN.md): develop, preview, ship.
+// Vercel's mesh-gradient stops: develop, preview, ship.
 const STOPS = ["#007cf0", "#00dfd8", "#7928ca", "#ff0080", "#ff4d4d", "#f9cb28"];
 
 function seeded(text: string) {
